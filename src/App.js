@@ -1,23 +1,24 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import PictureList from "./PictureList";
 
-function App() {
+function App({ pictures, setPictures, cart, setCart }) {
+  const navigate = useNavigate();
+
+  const addToCart = (picture) => {
+    setCart([...cart, picture]);
+    setPictures(pictures.filter((p) => p.id !== picture.id));
+  };
+
+  const goToCart = () => {
+    navigate("/cart", { state: { cart } });
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1>NFT Store</h1>
+      <PictureList pictures={pictures} addToCart={addToCart} />
+      <button onClick={goToCart}>Buy Now</button>
     </div>
   );
 }
