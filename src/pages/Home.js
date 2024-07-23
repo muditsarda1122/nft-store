@@ -6,9 +6,10 @@ function Home({ account, provider, signer }) {
   const [nfts, setNfts] = useState([]);
   const [cart, setCart] = useState([]);
   const [total, setTotal] = useState(0);
+  const [status, setStatus] = useState("");
 
-  const contractAddress = "0x2c390816920780419B31617cE91aE577b6379452";
-  //   const receivingWallet = "0xe7De586B036bDE068D399311df0569E82C060A31";
+  const contractAddress = "0x3037dE3000E232ab6777e28a69f509beCC2A04aE";
+
   const pinataGatewayUrl = process.env.REACT_APP_PINATA_GATEWAY_URL;
 
   useEffect(() => {
@@ -22,36 +23,21 @@ function Home({ account, provider, signer }) {
           );
 
           const tokenIds = await contract.getAllTokenIds(); //gives array of tokenIds as BigNumber
-          console.log("tokenIds", tokenIds);
 
           const nftsData = await Promise.all(
             tokenIds.map(async (id) => {
               const tokenId = id.toNumber(); //convert BigNumber to number
-              //   console.log("tokenId", tokenId);
 
               //get tokenURIHash for displaying the image
               const tokenURI = await contract.tokenURI(tokenId);
               const tokenURIHash = tokenURI.split("/").pop();
-              //   console.log("tokenURIHash", tokenURIHash);
 
               const tokenName = await contract.getName(tokenId);
-              //   console.log("tokenName", tokenName);
 
               const tokenPriceBN = await contract.getPrice(tokenId);
               const tokenPrice = ethers.utils.formatEther(tokenPriceBN);
-              //   console.log("tokenPrice", tokenPrice);
 
               const tokenOwner = await contract.ownerOfToken(tokenId);
-              //   console.log("tokenOwner", tokenOwner);
-
-              //   const tokenURIUrl = `${pinataGatewayUrl}/ipfs/${tokenURIHash}`;
-              //   console.log("TokenURIurl", tokenURIUrl);
-
-              //   const res = await fetch(tokenURI);
-              //   console.log("Res", res);
-
-              //   const metadata = res.json(); // .json() or .json ?
-              //   console.log("Metadata", metadata);
 
               return {
                 id: tokenId,
@@ -78,25 +64,33 @@ function Home({ account, provider, signer }) {
     setNfts(nfts.filter((item) => item.id !== nft.id));
   };
 
-  //   const handlePay = async () => {
-  //     if (!signer) {
-  //       alert("Please connect to MetaMask first");
-  //       return;
-  //     }
+  const handlePay = async () => {
+    if (!signer) {
+      alert("Please connect to MetaMask first");
+      return;
+    }
 
-  //     try {
-  //       const tx = await signer.sendTransaction({
-  //         to: receivingWallet, // My wallet
-  //         value: ethers.utils.parseUnits(total.toString(), "ether"),
-  //       });
-  //       await tx.wait();
+    try {
+      const contract = new ethers.Contract(contractAddress, SimpleNft, signer);
+      setStatus("Processing payment...");
 
-  //       setCart([]);
-  //       setTotal(0);
-  //     } catch (error) {
-  //       console.error("Payment failed: ", error);
-  //     }
-  //   };
+      for (const item of cart) {
+        const tx = await contract.buyNFT(item.id, {
+          value: ethers.utils.parseEther(item.price.toString()),
+        });
+        await tx.wait();
+
+        console.log(`Purchase for tokenId ${item.id} successful!`);
+      }
+
+      setCart([]);
+      setTotal(0);
+      setStatus("Payment and transfer successful!");
+    } catch (error) {
+      console.error("Payment failed: ", error);
+      setStatus("Payment or transfer failed.");
+    }
+  };
 
   return (
     <div>
@@ -139,7 +133,8 @@ function Home({ account, provider, signer }) {
           ))
         )}
         <h3>Total: {total} ETH</h3>
-        <button>Pay</button>
+        <button onClick={handlePay}>Pay</button>
+        {status && <p>{status}</p>}
       </div>
     </div>
   );

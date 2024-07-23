@@ -11,10 +11,12 @@ contract SimpleNft is ERC721URIStorage, Ownable {
     mapping(uint256 tokenId => address owner) private _tokenOwners;
     mapping(uint256 tokenId => uint256 price) private _tokenPrices;
     mapping(uint256 tokenId => string name) private _tokenName;
+    mapping(uint256 tokenId => address previousOwner) private _tokenPreviousOwners;
 
     event NFTMinted(address indexed owner, uint256 tokenId, string tokenURI);
     event NFTBurned(uint256 tokenId);
     event NFTTransferred(address indexed from, address indexed to, uint256 tokenId);
+    event PaymentMade(address indexed from, address indexed to, uint256 tokenId, uint256 amount);
 
     constructor() ERC721("SimpleNFT", "SNFT") Ownable(msg.sender){}
 
@@ -27,6 +29,7 @@ contract SimpleNft is ERC721URIStorage, Ownable {
         _tokenOwners[newTokenId] = msg.sender;
         _tokenPrices[newTokenId] = _price;
         _tokenName[newTokenId] = _name;
+        _tokenPreviousOwners[newTokenId] = address(0);
 
         _allTokenIds.push(newTokenId);
 
@@ -35,6 +38,64 @@ contract SimpleNft is ERC721URIStorage, Ownable {
 
         emit NFTMinted(msg.sender, newTokenId, _tokenURI);
         return newTokenId;
+    }
+
+    function buyNFT(uint256 tokenId) public payable {
+        address NftOwner = _tokenOwners[tokenId];
+        uint256 price = _tokenPrices[tokenId];
+
+        require(NftOwner != address(0), "Token does not exist");
+        require(msg.sender != NftOwner, "Cannot buy your own NFT");
+        require(msg.value >= price, "Insufficient funds sent");
+
+        payable(NftOwner).transfer(price);
+
+        _transfer(NftOwner, msg.sender, tokenId);
+
+        _tokenOwners[tokenId] = msg.sender;
+        _tokenPreviousOwners[tokenId] = NftOwner;
+
+        emit PaymentMade(msg.sender, NftOwner, tokenId, price);
+        emit NFTTransferred(NftOwner, msg.sender, tokenId);
+    }
+
+    function getMyNFTs() public view returns (uint256[] memory nftsMinted, uint256[] memory nftsBought) {
+        uint256[] memory allTokenIds = getAllTokenIds();
+        uint256 totalTokens = allTokenIds.length;
+
+        uint256 mintedCount = 0;
+        uint256 boughtCount = 0;
+
+        for (uint256 i = 0; i < totalTokens; i++) {
+            uint256 tokenId = _allTokenIds[i];
+            if (_tokenOwners[tokenId] == msg.sender) {
+                if (_tokenPreviousOwners[tokenId] == address(0)) {
+                    mintedCount++;
+                } else {
+                    boughtCount++;
+                }
+            }
+        }
+
+        uint256[] memory mintedTokens = new uint256[](mintedCount);
+        uint256[] memory boughtTokens = new uint256[](boughtCount);
+        uint256 mintedIndex = 0;
+        uint256 boughtIndex = 0;
+
+        for (uint256 i = 0; i < totalTokens; i++) {
+            uint256 tokenId = _allTokenIds[i];
+            if (_tokenOwners[tokenId] == msg.sender) {
+                if (_tokenPreviousOwners[tokenId] == address(0)) {
+                    mintedTokens[mintedIndex] = tokenId;
+                    mintedIndex++;
+                } else {
+                    boughtTokens[boughtIndex] = tokenId;
+                    boughtIndex++;
+                }
+            }
+        }
+
+        return (mintedTokens, boughtTokens);
     }
 
     // function burn(uint256 tokenId) public {

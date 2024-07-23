@@ -3,6 +3,7 @@ import { ethers } from "ethers";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import Home from "./pages/Home";
 import Mint from "./pages/Mint";
+import MyPage from "./pages/MyPage";
 
 function App() {
   const [account, setAccount] = useState(null);
@@ -38,6 +39,8 @@ function App() {
           <br />
           <Link to="/mint">Mint</Link>
           <br />
+          <Link to="/myPage">MyPage</Link>
+          <br />
           {account ? (
             <p>Connected as: {account}</p>
           ) : (
@@ -55,6 +58,12 @@ function App() {
             path="/mint"
             element={
               <Mint account={account} provider={provider} signer={signer} />
+            }
+          />
+          <Route
+            path="/myPage"
+            element={
+              <MyPage account={account} provider={provider} signer={signer} />
             }
           />
         </Routes>

@@ -8,8 +8,8 @@ function Mint({ account, provider, signer }) {
   const [selectedFile, setSelectedFile] = useState(null); //image
   const [status, setStatus] = useState("");
 
-  const contractAddress = "0x2c390816920780419B31617cE91aE577b6379452";
-  //   const receivingWallet = "0xe7De586B036bDE068D399311df0569E82C060A31";
+  const contractAddress = "0x3037dE3000E232ab6777e28a69f509beCC2A04aE";
+
   const pinataGatewayUrl = process.env.REACT_APP_PINATA_GATEWAY_URL;
 
   const handleFileChange = (e) => setSelectedFile(e.target.files[0]);
