@@ -7,7 +7,7 @@ function Home({ account, provider, signer }) {
   const [cart, setCart] = useState([]);
   const [total, setTotal] = useState(0);
 
-  const contractAddress = "0xe9e3d9fA8C7126F251530593C52191C9A1952059";
+  const contractAddress = "0x2c390816920780419B31617cE91aE577b6379452";
   //   const receivingWallet = "0xe7De586B036bDE068D399311df0569E82C060A31";
   const pinataGatewayUrl = process.env.REACT_APP_PINATA_GATEWAY_URL;
 
@@ -27,22 +27,22 @@ function Home({ account, provider, signer }) {
           const nftsData = await Promise.all(
             tokenIds.map(async (id) => {
               const tokenId = id.toNumber(); //convert BigNumber to number
-              console.log("tokenId", tokenId);
+              //   console.log("tokenId", tokenId);
 
               //get tokenURIHash for displaying the image
               const tokenURI = await contract.tokenURI(tokenId);
               const tokenURIHash = tokenURI.split("/").pop();
-              console.log("tokenURIHash", tokenURIHash);
+              //   console.log("tokenURIHash", tokenURIHash);
 
               const tokenName = await contract.getName(tokenId);
-              console.log("tokenName", tokenName);
+              //   console.log("tokenName", tokenName);
 
               const tokenPriceBN = await contract.getPrice(tokenId);
               const tokenPrice = ethers.utils.formatEther(tokenPriceBN);
-              console.log("tokenPrice", tokenPrice);
+              //   console.log("tokenPrice", tokenPrice);
 
               const tokenOwner = await contract.ownerOfToken(tokenId);
-              console.log("tokenOwner", tokenOwner);
+              //   console.log("tokenOwner", tokenOwner);
 
               //   const tokenURIUrl = `${pinataGatewayUrl}/ipfs/${tokenURIHash}`;
               //   console.log("TokenURIurl", tokenURIUrl);
