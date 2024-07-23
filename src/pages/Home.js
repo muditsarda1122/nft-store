@@ -7,7 +7,7 @@ function Home({ account, provider, signer }) {
   const [cart, setCart] = useState([]);
   const [total, setTotal] = useState(0);
 
-  const contractAddress = "0x65d8f81b373f6833DE1b20648f3c8fe6C29fc287";
+  const contractAddress = "0xe9e3d9fA8C7126F251530593C52191C9A1952059";
   //   const receivingWallet = "0xe7De586B036bDE068D399311df0569E82C060A31";
   const pinataGatewayUrl = process.env.REACT_APP_PINATA_GATEWAY_URL;
 
@@ -29,37 +29,43 @@ function Home({ account, provider, signer }) {
               const tokenId = id.toNumber(); //convert BigNumber to number
               console.log("tokenId", tokenId);
 
+              //get tokenURIHash for displaying the image
               const tokenURI = await contract.tokenURI(tokenId);
-
               const tokenURIHash = tokenURI.split("/").pop();
               console.log("tokenURIHash", tokenURIHash);
 
-              const tokenURIUrl = `${pinataGatewayUrl}/ipfs/${tokenURIHash}`;
-              console.log("TokenURIurl", tokenURIUrl);
+              const tokenName = await contract.getName(tokenId);
+              console.log("tokenName", tokenName);
 
-              const res = await fetch(tokenURI);
-              console.log("Res", res);
+              const tokenPriceBN = await contract.getPrice(tokenId);
+              const tokenPrice = ethers.utils.formatEther(tokenPriceBN);
+              console.log("tokenPrice", tokenPrice);
 
-              const metadata = res.json(); // .json() or .json ?
-              console.log("Metadata", metadata);
+              const tokenOwner = await contract.ownerOfToken(tokenId);
+              console.log("tokenOwner", tokenOwner);
+
+              //   const tokenURIUrl = `${pinataGatewayUrl}/ipfs/${tokenURIHash}`;
+              //   console.log("TokenURIurl", tokenURIUrl);
+
+              //   const res = await fetch(tokenURI);
+              //   console.log("Res", res);
+
+              //   const metadata = res.json(); // .json() or .json ?
+              //   console.log("Metadata", metadata);
 
               return {
                 id: tokenId,
-                ...metadata,
-                name: metadata.name,
+                name: tokenName,
                 image: tokenURIHash,
-                price: metadata.price,
+                price: tokenPrice,
+                owner: tokenOwner,
               };
             })
           );
-          console.log("nftsData", nftsData);
 
           setNfts(nftsData);
-          console.log("nftsData2", nfts);
         } catch (error) {
-          {
-            error ? console.error(error) : console.log("No error");
-          }
+          console.error("Error fetching NFTs:", error);
         }
       }
     };
@@ -108,6 +114,7 @@ function Home({ account, provider, signer }) {
               />
               <h3>{nft.name}</h3>
               <p>Price: {nft.price} ETH</p>
+              <p>Owner: {nft.owner}</p>
               <button onClick={() => addToCart(nft)}>Buy</button>
             </div>
           ))
@@ -121,16 +128,18 @@ function Home({ account, provider, signer }) {
           cart.map((item, index) => (
             <div key={index}>
               <img
-                src={`${process.env.REACT_APP_PINATA_GATEWAY_URL}/ipfs/${item.image}`}
+                src={`https://gateway.pinata.cloud/ipfs/${item.image}`}
                 alt={item.name}
                 width="100"
               />
               <h3>{item.name}</h3>
               <p>Price: {item.price} ETH</p>
+              <p>Owner: {item.owner}</p>
             </div>
           ))
         )}
         <h3>Total: {total} ETH</h3>
+        <button>Pay</button>
       </div>
     </div>
   );

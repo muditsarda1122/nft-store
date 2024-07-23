@@ -8,7 +8,7 @@ function Mint({ account, provider, signer }) {
   const [selectedFile, setSelectedFile] = useState(null); //image
   const [status, setStatus] = useState("");
 
-  const contractAddress = "0x65d8f81b373f6833DE1b20648f3c8fe6C29fc287";
+  const contractAddress = "0xe9e3d9fA8C7126F251530593C52191C9A1952059";
   //   const receivingWallet = "0xe7De586B036bDE068D399311df0569E82C060A31";
   const pinataGatewayUrl = process.env.REACT_APP_PINATA_GATEWAY_URL;
 
@@ -57,7 +57,11 @@ function Mint({ account, provider, signer }) {
 
       // calling smart contract
       const tokenURI = `${process.env.REACT_APP_PINATA_GATEWAY_URL}/ipfs/${resData.IpfsHash}`;
-      const tx = await contract.mint(tokenURI);
+      const tx = await contract.mint(
+        tokenURI,
+        name,
+        ethers.utils.parseEther(price)
+      );
       await tx.wait();
 
       setStatus("NFT minted successfully!");

@@ -6,9 +6,11 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract SimpleNft is ERC721URIStorage, Ownable {
     uint256 private _currentTokenId;
-    mapping(uint256 tokenId => address owner) private _tokenOwners;
-    // mapping(uint256 tokenId => uint256 price) private _tokenPrices;
     uint256[] private _allTokenIds;
+
+    mapping(uint256 tokenId => address owner) private _tokenOwners;
+    mapping(uint256 tokenId => uint256 price) private _tokenPrices;
+    mapping(uint256 tokenId => string name) private _tokenName;
 
     event NFTMinted(address indexed owner, uint256 tokenId, string tokenURI);
     event NFTBurned(uint256 tokenId);
@@ -16,13 +18,16 @@ contract SimpleNft is ERC721URIStorage, Ownable {
 
     constructor() ERC721("SimpleNFT", "SNFT") Ownable(msg.sender){}
 
-    function mint(string memory _tokenURI) public returns (uint256) {
-        // require(price > 0, "Price must be greater than zero");
+    function mint(string memory _tokenURI, string memory _name, uint256 _price) public returns (uint256) {
+        require(_price > 0, "Price must be greater than zero");
         
         uint256 newTokenId = _currentTokenId + 1;
         _currentTokenId = newTokenId;
+
         _tokenOwners[newTokenId] = msg.sender;
-        // _tokenPrices[newTokenId] = price;
+        _tokenPrices[newTokenId] = _price;
+        _tokenName[newTokenId] = _name;
+
         _allTokenIds.push(newTokenId);
 
         _mint(msg.sender, newTokenId);
@@ -57,9 +62,13 @@ contract SimpleNft is ERC721URIStorage, Ownable {
         return _tokenOwners[tokenId];
     }
 
-    // function getPrice(uint256 tokenId) public view returns (uint256) {
-    //     return _tokenPrices[tokenId];
-    // }
+    function getPrice(uint256 tokenId) public view returns (uint256) {
+        return _tokenPrices[tokenId];
+    }
+
+    function getName(uint256 tokenId) public view returns (string memory) {
+        return _tokenName[tokenId];
+    }
 
     function getAllTokenIds() public view returns (uint256[] memory) {
         return _allTokenIds;
