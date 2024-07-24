@@ -8,7 +8,7 @@ function Home({ account, provider, signer }) {
   const [total, setTotal] = useState(0);
   const [status, setStatus] = useState("");
 
-  const contractAddress = "0x3037dE3000E232ab6777e28a69f509beCC2A04aE";
+  const contractAddress = "0x1253EaDE825b60bC06e17dC663F8DC2b8A8EC7f7";
 
   const pinataGatewayUrl = process.env.REACT_APP_PINATA_GATEWAY_URL;
 
@@ -107,7 +107,7 @@ function Home({ account, provider, signer }) {
                 width="100"
               />
               <h3>{nft.name}</h3>
-              <p>Price: {nft.price} ETH</p>
+              <p>Price: {nft.price} MATIC</p>
               <p>Owner: {nft.owner}</p>
               <button onClick={() => addToCart(nft)}>Buy</button>
             </div>
@@ -127,12 +127,12 @@ function Home({ account, provider, signer }) {
                 width="100"
               />
               <h3>{item.name}</h3>
-              <p>Price: {item.price} ETH</p>
+              <p>Price: {item.price} MATIC</p>
               <p>Owner: {item.owner}</p>
             </div>
           ))
         )}
-        <h3>Total: {total} ETH</h3>
+        <h3>Total: {total} MATIC</h3>
         <button onClick={handlePay}>Pay</button>
         {status && <p>{status}</p>}
       </div>

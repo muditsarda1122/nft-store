@@ -6,7 +6,7 @@ function MyPage({ account, provider, signer }) {
   const [mintedNFTs, setMintedNFTs] = useState([]);
   const [boughtNFTs, setBoughtNFTs] = useState([]);
 
-  const contractAddress = "0x3037dE3000E232ab6777e28a69f509beCC2A04aE";
+  const contractAddress = "0x1253EaDE825b60bC06e17dC663F8DC2b8A8EC7f7";
   const pinataGatewayUrl = process.env.REACT_APP_PINATA_GATEWAY_URL;
 
   useEffect(() => {
@@ -83,7 +83,7 @@ function MyPage({ account, provider, signer }) {
                 width="100"
               />
               <h3>{nft.name}</h3>
-              <p>Price: {nft.price} ETH</p>
+              <p>Price: {nft.price} MATIC</p>
             </div>
           ))
         )}
@@ -101,7 +101,7 @@ function MyPage({ account, provider, signer }) {
                 width="100"
               />
               <h3>{nft.name}</h3>
-              <p>Price: {nft.price} ETH</p>
+              <p>Price: {nft.price} MATIC</p>
             </div>
           ))
         )}

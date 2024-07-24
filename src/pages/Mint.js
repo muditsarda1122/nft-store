@@ -8,7 +8,7 @@ function Mint({ account, provider, signer }) {
   const [selectedFile, setSelectedFile] = useState(null); //image
   const [status, setStatus] = useState("");
 
-  const contractAddress = "0x3037dE3000E232ab6777e28a69f509beCC2A04aE";
+  const contractAddress = "0x1253EaDE825b60bC06e17dC663F8DC2b8A8EC7f7";
 
   const pinataGatewayUrl = process.env.REACT_APP_PINATA_GATEWAY_URL;
 
@@ -96,15 +96,6 @@ function Mint({ account, provider, signer }) {
         />
       </label>
       <br />
-      {/* <label>
-        Image URL:
-        <input
-          type="text"
-          value={imageUrl}
-          onChange={(e) => setImageUrl(e.target.value)}
-        />
-      </label>
-      <br /> */}
       <label>
         Choose File:
         <input type="file" onChange={handleFileChange} />
