@@ -21,6 +21,8 @@ function Mint({ account, provider, signer }) {
     }
 
     try {
+      const startTime = new Date();
+
       // generating form data for IPFS
       const formData = new FormData();
       formData.append("file", selectedFile);
@@ -64,6 +66,11 @@ function Mint({ account, provider, signer }) {
         ethers.utils.parseEther(price)
       );
       await tx.wait();
+
+      const endTime = new Date();
+
+      const timeTaken = (endTime - startTime) / 1000;
+      console.log(`Minting process took ${timeTaken} seconds.`);
 
       setStatus("NFT minted successfully!");
     } catch (error) {
