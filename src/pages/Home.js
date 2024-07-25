@@ -8,7 +8,7 @@ function Home({ account, provider, signer }) {
   const [total, setTotal] = useState(0);
   const [status, setStatus] = useState("");
 
-  const contractAddress = "0x1253EaDE825b60bC06e17dC663F8DC2b8A8EC7f7";
+  const contractAddress = "0x6216cB9c931dba70Be04CCa41B5BBF47f7Ca2F2e";
 
   const pinataGatewayUrl = process.env.REACT_APP_PINATA_GATEWAY_URL;
 
@@ -27,6 +27,12 @@ function Home({ account, provider, signer }) {
           const nftsData = await Promise.all(
             tokenIds.map(async (id) => {
               const tokenId = id.toNumber(); //convert BigNumber to number
+
+              // we wish to only display the NFTs which have been minted but not yet bought.
+              const previousOwner = await contract.tokenPreviousOwners(tokenId);
+              if (previousOwner !== ethers.constants.AddressZero) {
+                return null;
+              }
 
               //get tokenURIHash for displaying the image
               const tokenURI = await contract.tokenURI(tokenId);
@@ -49,7 +55,8 @@ function Home({ account, provider, signer }) {
             })
           );
 
-          setNfts(nftsData);
+          const availableNfts = nftsData.filter((nft) => nft !== null);
+          setNfts(availableNfts);
         } catch (error) {
           console.error("Error fetching NFTs:", error);
         }
@@ -81,6 +88,8 @@ function Home({ account, provider, signer }) {
         await tx.wait();
 
         console.log(`Purchase for tokenId ${item.id} successful!`);
+
+        setNfts(nfts.filter((nft) => nft.id !== item.id));
       }
 
       setCart([]);

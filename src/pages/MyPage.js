@@ -6,7 +6,7 @@ function MyPage({ account, provider, signer }) {
   const [mintedNFTs, setMintedNFTs] = useState([]);
   const [boughtNFTs, setBoughtNFTs] = useState([]);
 
-  const contractAddress = "0x1253EaDE825b60bC06e17dC663F8DC2b8A8EC7f7";
+  const contractAddress = "0x6216cB9c931dba70Be04CCa41B5BBF47f7Ca2F2e";
   const pinataGatewayUrl = process.env.REACT_APP_PINATA_GATEWAY_URL;
 
   useEffect(() => {

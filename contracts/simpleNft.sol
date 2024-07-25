@@ -143,6 +143,10 @@ contract SimpleNft is ERC721URIStorage, Ownable {
         return _currentTokenId; 
     }
 
+    function tokenPreviousOwners(uint256 tokenId) public view returns (address) {
+        return _tokenPreviousOwners[tokenId];
+    }
+
     // function _removeTokenId(uint256 tokenId) private {
     //     for (uint256 i = 0; i < _allTokenIds.length; i++) {
     //         if (_allTokenIds[i] == tokenId) {
